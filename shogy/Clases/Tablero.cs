@@ -7,50 +7,65 @@ namespace shogy.Clases
     class Tablero
     {
         //public List<Ficha> Lugares = new List<Ficha>();
-        public Object[,] Lugares = new Object[8, 8];
+        public Object[,] Lugares = new Object[9, 9];
 
         public Tablero() {
-            var Lancero1 = new Ficha("00", "Lancero", "Lv");
-            Lugares[0, 0] = Lancero1;
-            var Caballo1 = new Ficha("00", "Caballo", "Cv");
-            Lugares[0, 1] = Caballo1;
+            Lugares[0,0] = new Ficha("Lv");     //Lancero 
+            Lugares[0,1] = new Ficha("Cv");     //Caballo
+            Lugares[0,2] = new Ficha("Pv");     //Plata
+            Lugares[0,3] = new Ficha("Ov");     //Oro
+            Lugares[0,4] = new Ficha("Rv");     //Rey
+            Lugares[0,5] = new Ficha("Ov");     
+            Lugares[0, 6] = new Ficha("Pv");
+            Lugares[0, 7] = new Ficha("Cv");
+            Lugares[0, 8] = new Ficha( "Lv");
+            Lugares[1,1] = new Ficha("Tv");     //Torre
+            Lugares[1, 7] = new Ficha("Av");    //Alfil
+            //fila de peones
+            for (int columna = 0; columna < 9; columna++)
+            {
+                Lugares[2, columna] = new Ficha("pv");   //peon
+            }
+            //filas peones
+            for (int columna = 0; columna < 9; columna++)
+            {
+                Lugares[6, columna] = new Ficha("p^");   //peon
+            }
+            Lugares[7, 1] = new Ficha("A^");    
+            Lugares[7, 7] = new Ficha("T^");    
+            Lugares[8, 0] = new Ficha("L^");     
+            Lugares[8, 1] = new Ficha("C^");    
+            Lugares[8, 2] = new Ficha("P^");    
+            Lugares[8, 3] = new Ficha("O^");    
+            Lugares[8, 4] = new Ficha("R^");    
+            Lugares[8, 5] = new Ficha("O^");
+            Lugares[8, 6] = new Ficha("P^");
+            Lugares[8, 7] = new Ficha("C^");
+            Lugares[8, 8] = new Ficha("L^");
 
-
-
-            var Rey = new Ficha("00", "Rey", "Rv" );
-            Lugares[0, 0] = Rey;
-            var Torre = new Ficha("01", "Torre", "Tv");
-            Lugares[0, 1] = Torre;
         }
 
         public void Dibujar() {
-
-            for (int filas = 0; filas < 8; filas++)
+            Console.WriteLine("0 1 2 3 4 5 6 7 8 ");
+            for (int filas = 0; filas < 9; filas++)
             {
                 string linea = "";
-                for (int columnas = 0; columnas < 8; columnas++)
+                for (int columnas = 0; columnas < 9; columnas++)
                 {
                     var f = (Ficha)Lugares[filas, columnas];
-                    linea += f.Dibujo;
+
+                    linea += f?.Dibujo == null? "  " : f.Dibujo;
                 }
-                Console.WriteLine(linea);
+                Console.WriteLine(linea + " " + filas);
             }
         }
 
+        public void Mover(string origen, string destino) {
+            char[] desde = origen.ToCharArray();
 
-
-
-        //public Jugador j1 { get; set; }
-        //public Jugador j2 {get; set;}
+            var pp = 0;
+        }
 
     }
 
-
-
-
 }
-
-
-//Object[] ArrayOfObjects = new Object[] {1,"3"}
-//int[][] jagged_arr = new int[4][]
-//jagged_arr[0] = new int[2];

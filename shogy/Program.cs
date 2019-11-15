@@ -16,7 +16,15 @@ namespace shogy
             var tab = new Tablero();
             tab.Dibujar();
 
-            string val = Console.ReadLine();
+            Console.WriteLine("");
+            Console.WriteLine("Turno jugador 1");
+            Console.WriteLine("Casillero Origen");
+            string origen = Console.ReadLine();
+            
+            Console.WriteLine("Casillero Destino");
+            string destino = Console.ReadLine();
+
+            tab.Mover(origen, destino);
 
 
         }
