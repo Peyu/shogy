@@ -688,34 +688,30 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\acoppola\\.nuget\\packages\\": {},
-    "C:\\Microsoft\\Xamarin\\NuGet\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "C:\\Users\\Peyu\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\workspace\\Learning\\shogy\\shogy\\shogy.csproj",
+      "projectUniqueName": "C:\\WorkSpace\\puntonet\\shogy\\shogy\\shogy.csproj",
       "projectName": "shogy",
-      "projectPath": "C:\\workspace\\Learning\\shogy\\shogy\\shogy.csproj",
-      "packagesPath": "C:\\Users\\acoppola\\.nuget\\packages\\",
-      "outputPath": "C:\\workspace\\Learning\\shogy\\shogy\\obj\\",
+      "projectPath": "C:\\WorkSpace\\puntonet\\shogy\\shogy\\shogy.csproj",
+      "packagesPath": "C:\\Users\\Peyu\\.nuget\\packages\\",
+      "outputPath": "C:\\WorkSpace\\puntonet\\shogy\\shogy\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "C:\\Microsoft\\Xamarin\\NuGet\\",
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        "C:\\Program Files (x86)\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\acoppola\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        "C:\\Users\\Peyu\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp2.1"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "http://nuget.consensusgroup.net/nuget": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -733,6 +729,7 @@
       "netcoreapp2.1": {
         "dependencies": {
           "Microsoft.NETCore.App": {
+            "suppressParent": "All",
             "target": "Package",
             "version": "[2.1.0, )",
             "autoReferenced": true

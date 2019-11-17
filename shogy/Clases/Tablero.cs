@@ -7,7 +7,7 @@ namespace shogy.Clases
     class Tablero
     {
         //public List<Ficha> Lugares = new List<Ficha>();
-        public Object[,] Lugares = new Object[9, 9];
+        public Ficha[,] Lugares = new Ficha[9, 9];
 
         public Tablero() {
             Lugares[0,0] = new Ficha("Lv");     //Lancero 
@@ -46,7 +46,9 @@ namespace shogy.Clases
         }
 
         public void Dibujar() {
-            Console.WriteLine("0 1 2 3 4 5 6 7 8 ");
+
+            Console.WriteLine("    0  1  2  3  4  5  6  7  8 ");
+            Console.WriteLine(" ");
             for (int filas = 0; filas < 9; filas++)
             {
                 string linea = "";
@@ -54,16 +56,33 @@ namespace shogy.Clases
                 {
                     var f = (Ficha)Lugares[filas, columnas];
 
-                    linea += f?.Dibujo == null? "  " : f.Dibujo;
+                    linea += f?.Dibujo == null? "   " : " " + f.Dibujo ;
                 }
-                Console.WriteLine(linea + " " + filas);
+                Console.WriteLine(filas + "  " + linea);
+                Console.WriteLine(" ");
             }
         }
 
         public void Mover(string origen, string destino) {
             char[] desde = origen.ToCharArray();
+            int filaOrigen = int.Parse(desde[0].ToString()); 
+            int columnaOrigen = int.Parse(desde[1].ToString());
 
-            var pp = 0;
+            char[] hasta = destino.ToCharArray();
+            int filaDestino = int.Parse(hasta[0].ToString());
+            int columnaDestino = int.Parse(hasta[1].ToString());
+
+            Ficha FichaEnMovimiento = Lugares[filaOrigen, columnaOrigen];
+            
+            //Agregar logica para comprbar reglas de movimiento
+            //vacio el lugar
+            Lugares[filaOrigen, columnaOrigen] = null;
+            //coloc ficha en nueva posicion
+            Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
+
+            //actualizo tablero
+            Console.Clear();
+            Dibujar();
         }
 
     }
