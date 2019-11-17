@@ -1,2 +1,24 @@
 
 *.lock
+
+.vs/shogy/v15/.suo
+
+.vs/shogy/v15/Server/sqlite3/storage.ide
+
+.vs/shogy/v15/Server/sqlite3/storage.ide-shm
+
+.vs/shogy/v15/Server/sqlite3/storage.ide-wal
+
+shogy/bin/Debug/netcoreapp2.1/shogy.dll
+
+shogy/bin/Debug/netcoreapp2.1/shogy.pdb
+
+shogy/obj/Debug/netcoreapp2.1/shogy.dll
+
+shogy/obj/Debug/netcoreapp2.1/shogy.pdb
+
+.vs/shogy/v15/
+
+shogy/bin/Debug/netcoreapp2.1/
+
+shogy/obj/Debug/netcoreapp2.1/

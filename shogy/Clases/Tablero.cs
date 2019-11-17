@@ -14,42 +14,43 @@ namespace shogy.Clases
         
 
         public Tablero(Jugador j1, Jugador j2) {
-            Lugares[0,0] = new Ficha("Lv");     //Lancero 
-            Lugares[0,1] = new Ficha("Cv");     //Caballo
-            Lugares[0,2] = new Ficha("Pv");     //Plata
-            Lugares[0,3] = new Ficha("Ov");     //Oro
-            Lugares[0,4] = new Ficha("Rv");     //Rey
-            Lugares[0,5] = new Ficha("Ov");     
-            Lugares[0, 6] = new Ficha("Pv");
-            Lugares[0, 7] = new Ficha("Cv");
-            Lugares[0, 8] = new Ficha( "Lv");
-            Lugares[1,1] = new Ficha("Tv");     //Torre
-            Lugares[1, 7] = new Ficha("Av");    //Alfil
+            J1 = j1;
+            J2 = j2;
+
+            Lugares[0,0] = new Ficha("Lv", J2);     //Lancero 
+            Lugares[0,1] = new Ficha("Cv", J2);     //Caballo
+            Lugares[0,2] = new Ficha("Pv", J2);     //Plata
+            Lugares[0,3] = new Ficha("Ov", J2);     //Oro
+            Lugares[0,4] = new Ficha("Rv", J2);     //Rey
+            Lugares[0,5] = new Ficha("Ov", J2);     
+            Lugares[0, 6] = new Ficha("Pv", J2);
+            Lugares[0, 7] = new Ficha("Cv", J2);
+            Lugares[0, 8] = new Ficha( "Lv", J2);
+            Lugares[1,1] = new Ficha("Tv", J2);     //Torre
+            Lugares[1, 7] = new Ficha("Av", J2);    //Alfil
             //fila de peones
             for (int columna = 0; columna < 9; columna++)
             {
-                Lugares[2, columna] = new Ficha("pv");   //peon
+                Lugares[2, columna] = new Ficha("pv", J2);   //peon
             }
             //filas peones
             for (int columna = 0; columna < 9; columna++)
             {
-                Lugares[6, columna] = new Ficha("p^");   //peon
+                Lugares[6, columna] = new Ficha("p^", J1);   //peon
             }
-            Lugares[7, 1] = new Ficha("A^");    
-            Lugares[7, 7] = new Ficha("T^");    
-            Lugares[8, 0] = new Ficha("L^");     
-            Lugares[8, 1] = new Ficha("C^");    
-            Lugares[8, 2] = new Ficha("P^");    
-            Lugares[8, 3] = new Ficha("O^");    
-            Lugares[8, 4] = new Ficha("R^");    
-            Lugares[8, 5] = new Ficha("O^");
-            Lugares[8, 6] = new Ficha("P^");
-            Lugares[8, 7] = new Ficha("C^");
-            Lugares[8, 8] = new Ficha("L^");
+            Lugares[7, 1] = new Ficha("A^", J1);    
+            Lugares[7, 7] = new Ficha("T^", J1);    
+            Lugares[8, 0] = new Ficha("L^", J1);     
+            Lugares[8, 1] = new Ficha("C^", J1);    
+            Lugares[8, 2] = new Ficha("P^", J1);    
+            Lugares[8, 3] = new Ficha("O^", J1);    
+            Lugares[8, 4] = new Ficha("R^", J1);    
+            Lugares[8, 5] = new Ficha("O^", J1);
+            Lugares[8, 6] = new Ficha("P^", J1);
+            Lugares[8, 7] = new Ficha("C^", J1);
+            Lugares[8, 8] = new Ficha("L^", J1);
 
-            J1 = j1;
-            J2 = j2;
-
+            
             Turno = J1;
 
         }
@@ -73,6 +74,7 @@ namespace shogy.Clases
         }
 
         public void Mover(string origen, string destino) {
+
             char[] desde = origen.ToCharArray();
             int filaOrigen = int.Parse(desde[0].ToString()); 
             int columnaOrigen = int.Parse(desde[1].ToString());
@@ -82,29 +84,32 @@ namespace shogy.Clases
             int columnaDestino = int.Parse(hasta[1].ToString());
 
             Ficha FichaEnMovimiento = Lugares[filaOrigen, columnaOrigen];
-            
-            //Agregar logica para comprbar reglas de movimiento
-            //vacio el lugar
-            Lugares[filaOrigen, columnaOrigen] = null;
-            //coloc ficha en nueva posicion
-            Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
-
-            //actualizo tablero
-            Console.Clear();
-            Dibujar();
-        }
-
-        public Jugador getTurno() {
-            if (Turno == J1)
+            if (FichaEnMovimiento.Duenio.Nombre == Turno.Nombre)
             {
-                Turno = J2;
-                return J1;
+                //Agregar logica para comprbar reglas de movimiento
+
+                //vacio el lugar
+                Lugares[filaOrigen, columnaOrigen] = null;
+                //coloc ficha en nueva posicion
+                Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
+
+                //actualizo tablero y turno
+                Turno = Turno.Nombre == J1.Nombre ? J2 : J1;
+
+                Console.Clear();
+                Dibujar();
             }
             else {
-                Turno = J1;
-                return J2;
+                Console.WriteLine("Solo puedes mover tus propias fichas, intentalo denuevo");
+                System.Threading.Thread.Sleep(3000);
+                Console.Clear();
+                Dibujar();
             }
+
+
+
         }
+
 
     }
 

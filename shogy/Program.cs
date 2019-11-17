@@ -23,7 +23,7 @@ namespace shogy
                 Console.WriteLine(" ");
                 tab.Dibujar();
 
-                Console.WriteLine("Turno de " + tab.getTurno().Nombre);
+                Console.WriteLine("Turno de " + tab.Turno.Nombre);
                 Console.WriteLine("Casillero Origen");
                 string origen = Console.ReadLine();
 
