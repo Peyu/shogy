@@ -7,14 +7,23 @@ namespace shogy
     {
         static void Main(string[] args)
         {
+
+            Console.WriteLine("Ingrese nombre jugador 1");
+            var nombre1 = Console.ReadLine();
+            Jugador j1 = new Jugador(nombre1);
+            Console.WriteLine("Ingrese nombre jugador 2");
+            var nombre2 = Console.ReadLine();
+            Jugador j2 = new Jugador(nombre2);
+            Console.Clear();
+
+            var tab = new Tablero(j1,j2);
             
-            var tab = new Tablero();
             while (true)
             {
+                Console.WriteLine(" ");
                 tab.Dibujar();
 
-                Console.WriteLine("");
-                Console.WriteLine("Turno jugador 1");
+                Console.WriteLine("Turno de " + tab.getTurno().Nombre);
                 Console.WriteLine("Casillero Origen");
                 string origen = Console.ReadLine();
 

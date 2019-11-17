@@ -8,8 +8,12 @@ namespace shogy.Clases
     {
         //public List<Ficha> Lugares = new List<Ficha>();
         public Ficha[,] Lugares = new Ficha[9, 9];
+        public Jugador J1;
+        public Jugador J2;
+        public Jugador Turno;
+        
 
-        public Tablero() {
+        public Tablero(Jugador j1, Jugador j2) {
             Lugares[0,0] = new Ficha("Lv");     //Lancero 
             Lugares[0,1] = new Ficha("Cv");     //Caballo
             Lugares[0,2] = new Ficha("Pv");     //Plata
@@ -42,6 +46,11 @@ namespace shogy.Clases
             Lugares[8, 6] = new Ficha("P^");
             Lugares[8, 7] = new Ficha("C^");
             Lugares[8, 8] = new Ficha("L^");
+
+            J1 = j1;
+            J2 = j2;
+
+            Turno = J1;
 
         }
 
@@ -83,6 +92,18 @@ namespace shogy.Clases
             //actualizo tablero
             Console.Clear();
             Dibujar();
+        }
+
+        public Jugador getTurno() {
+            if (Turno == J1)
+            {
+                Turno = J2;
+                return J1;
+            }
+            else {
+                Turno = J1;
+                return J2;
+            }
         }
 
     }

@@ -6,8 +6,13 @@ namespace shogy.Clases
 {
     class Jugador
     {
-        public string Name { get; set; }
-        public List<Ficha> EnMano { get; set; }
+        public string Nombre { get; set; }
+        public List<Ficha> EnMano { get; set; } = new List<Ficha>();
+
+        public Jugador(string nombre) {
+            Nombre = nombre;
+            
+        }
 
     }
 }
