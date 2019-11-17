@@ -86,30 +86,80 @@ namespace shogy.Clases
             Ficha FichaEnMovimiento = Lugares[filaOrigen, columnaOrigen];
             if (FichaEnMovimiento.Duenio.Nombre == Turno.Nombre)
             {
-                //Agregar logica para comprbar reglas de movimiento
 
-                //vacio el lugar
-                Lugares[filaOrigen, columnaOrigen] = null;
-                //coloc ficha en nueva posicion
-                Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
+                if (MovimientoEsValido(filaOrigen, columnaOrigen, filaDestino, columnaDestino, FichaEnMovimiento))
+                {
+                    //vacio el lugar
+                    Lugares[filaOrigen, columnaOrigen] = null;
+                    //coloc ficha en nueva posicion
+                    Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
 
-                //actualizo tablero y turno
-                Turno = Turno.Nombre == J1.Nombre ? J2 : J1;
+                    //actualizo tablero y turno
+                    Turno = Turno.Nombre == J1.Nombre ? J2 : J1;
 
-                Console.Clear();
-                Dibujar();
+                    Console.Clear();
+                    Dibujar();
+                }
+                else {
+                    Mensaje("Movimiento no permitido, intentelo denuevo");
+                }
+
+
             }
             else {
-                Console.WriteLine("Solo puedes mover tus propias fichas, intentalo denuevo");
-                System.Threading.Thread.Sleep(3000);
-                Console.Clear();
-                Dibujar();
+                Mensaje("Solo puedes mover tus propias fichas, intentalo denuevo");
             }
-
-
 
         }
 
+        private void Mensaje(string msg) {
+            Console.WriteLine(msg);
+            Console.WriteLine("Presione una tecla para continuar");
+            Console.ReadLine();
+            //System.Threading.Thread.Sleep(3000);
+            Console.Clear();
+            Dibujar();
+        }
+
+        private bool MovimientoEsValido(int filaOrigen, int columnaOrigen, int filaDestino, int columnaDestino, Ficha ficha ) {
+
+            bool EsValido = false;
+            switch (ficha.Dibujo) {
+                case "pv":
+                    if (columnaOrigen == columnaDestino && filaDestino == (filaOrigen + 1))
+                        EsValido = true;
+                    break;
+                case "p^":
+                    if (columnaOrigen == columnaDestino && filaDestino == (filaOrigen - 1))
+                        EsValido = true;
+                    break;
+                case "Rv":
+                case "R^":
+                    if (Math.Abs(filaOrigen - filaDestino) <= 1 && Math.Abs(columnaOrigen - columnaDestino) <= 1)
+                        EsValido = true;
+                    break;
+                case "Tv":
+                case "T^":
+                    if( 
+                        ((columnaOrigen == columnaDestino) && (filaOrigen != filaDestino)) ||
+                        ((filaOrigen == filaDestino) && (columnaOrigen != columnaDestino))
+                      )
+                        EsValido = true;
+                    break;
+                case "Av":
+                case "A^":
+                    if (((filaOrigen + columnaOrigen) == (filaDestino + columnaDestino)))
+                        EsValido = true;
+                    break;
+                    
+                default:
+                    return false;
+
+            }
+
+            return EsValido;
+
+        }
 
     }
 
