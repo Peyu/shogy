@@ -83,8 +83,20 @@ namespace shogy.Clases
             int filaDestino = int.Parse(hasta[0].ToString());
             int columnaDestino = int.Parse(hasta[1].ToString());
 
-            Ficha FichaEnMovimiento = Lugares[filaOrigen, columnaOrigen];
-            if (FichaEnMovimiento.Duenio.Nombre == Turno.Nombre)
+            Ficha FichaEnMovimiento = null;
+            try
+            {
+                FichaEnMovimiento = Lugares[filaOrigen, columnaOrigen];
+            }
+            catch (IndexOutOfRangeException e) {
+                Mensaje("No se puede mover una fica fuera del casilero, intentenlo nuevamente");
+            }
+
+            if (FichaEnMovimiento == null) {
+                Mensaje("No ninguna ficha en ese casillero");
+            }
+
+            else if (FichaEnMovimiento.Duenio.Nombre == Turno.Nombre)
             {
 
                 if (MovimientoEsValido(filaOrigen, columnaOrigen, filaDestino, columnaDestino, FichaEnMovimiento))
@@ -148,10 +160,49 @@ namespace shogy.Clases
                     break;
                 case "Av":
                 case "A^":
-                    if (((filaOrigen + columnaOrigen) == (filaDestino + columnaDestino)))
+                    if (  //diagonales izq a der
+                          (  (filaOrigen > filaDestino) && (columnaOrigen < columnaDestino) ||
+                             (filaOrigen < filaDestino) && (columnaOrigen > columnaDestino)
+                          ) &&
+                            (filaOrigen + columnaOrigen) == (filaDestino + columnaDestino)
+                            &&
+                          (
+                            (filaOrigen != filaDestino) &&
+                            (columnaOrigen != columnaDestino)
+                          )
+                        )
+                        EsValido = true;
+                    else if( //diagonales der a izq
+                        
+                            (  ((filaOrigen < filaDestino) && (columnaOrigen < columnaDestino)) ||
+                               ((filaOrigen > filaDestino)  && (columnaOrigen > columnaDestino) 
+                            ) &&
+                                (Math.Abs(filaOrigen - columnaOrigen)) == 
+                                (Math.Abs(filaDestino - columnaDestino))                               
+                            ) &&
+                            (
+                                (filaOrigen != filaDestino) &&
+                                (columnaOrigen != columnaDestino)
+                            )
+
+                        )
                         EsValido = true;
                     break;
-                    
+                case "O^":
+                    if (
+                        (Math.Abs(filaOrigen - filaDestino) <= 1) && (Math.Abs(columnaOrigen - columnaDestino) <= 1) &&
+                        !((filaOrigen == (filaDestino - 1)) && (columnaOrigen != columnaDestino) && (filaOrigen < filaDestino))
+                      )
+                        EsValido = true;
+                    break;
+                case "Ov":
+                    if (
+                        (Math.Abs(filaOrigen - filaDestino) <= 1) && (Math.Abs(columnaOrigen - columnaDestino) <= 1) &&
+                        !((filaOrigen == (filaDestino + 1)) && (columnaOrigen != columnaDestino) && (filaOrigen > filaDestino))
+                      )
+                        EsValido = true;
+                    break;
+
                 default:
                     return false;
 
@@ -159,6 +210,11 @@ namespace shogy.Clases
 
             return EsValido;
 
+        }
+
+        public static bool IsEven(int value)
+        {
+            return value % 2 != 0;
         }
 
     }
