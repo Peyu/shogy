@@ -202,6 +202,39 @@ namespace shogy.Clases
                       )
                         EsValido = true;
                     break;
+                case "P^":
+                    if(
+                        (Math.Abs(filaOrigen - filaDestino) <= 1) && (Math.Abs(columnaOrigen - columnaDestino) <= 1) &&
+                        ((filaOrigen +1 == filaDestino)&&(Math.Abs(columnaOrigen - columnaDestino) == 1) ) ||
+                        (filaOrigen == filaDestino + 1)
+                      )
+                        EsValido = true;
+                    break;
+                case "Pv":
+                    if (
+                        (Math.Abs(filaOrigen - filaDestino) <= 1) && (Math.Abs(columnaOrigen - columnaDestino) <= 1) &&
+                        ((filaOrigen - 1 == filaDestino) && (Math.Abs(columnaOrigen - columnaDestino) == 1)) ||
+                        (filaOrigen == filaDestino - 1)
+                      )
+                        EsValido = true;
+                    break;
+                case "C^":
+                    if ((filaOrigen == filaDestino + 2) && (Math.Abs(columnaOrigen - columnaDestino) == 1))
+                        EsValido = true;
+                    break;
+                case "Cv":
+                    if ((filaOrigen == filaDestino - 2) && (Math.Abs(columnaOrigen - columnaDestino) == 1))
+                        EsValido = true;
+                    break;
+                case "L^":
+                    if ((filaOrigen < filaDestino) && (columnaOrigen == columnaDestino))
+                        EsValido = true;
+                    break;
+                case "Lv":
+                    if ((filaOrigen > filaDestino) && (columnaOrigen == columnaDestino))
+                        EsValido = true;
+                    break;
+
 
                 default:
                     return false;
