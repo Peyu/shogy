@@ -75,6 +75,8 @@ namespace shogy.Clases
 
         public void Mover(string origen, string destino) {
 
+            //agregar regex para verificar formato de entrada y verificar existencia
+
             char[] desde = origen.ToCharArray();
             int filaOrigen = int.Parse(desde[0].ToString()); 
             int columnaOrigen = int.Parse(desde[1].ToString());
@@ -93,7 +95,7 @@ namespace shogy.Clases
             }
 
             if (FichaEnMovimiento == null) {
-                Mensaje("No ninguna ficha en ese casillero");
+                Mensaje("No hay ninguna ficha en ese casillero");
             }
 
             else if (FichaEnMovimiento.Duenio.Nombre == Turno.Nombre)
@@ -101,10 +103,25 @@ namespace shogy.Clases
 
                 if (MovimientoEsValido(filaOrigen, columnaOrigen, filaDestino, columnaDestino, FichaEnMovimiento))
                 {
+
                     //vacio el lugar
                     Lugares[filaOrigen, columnaOrigen] = null;
-                    //coloc ficha en nueva posicion
-                    Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
+                    //reviso si hay una ficha enemiga en el lugar de destino y se com
+                    if (Lugares[filaDestino, columnaDestino] == null)
+                        Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
+                    else {
+                        if (Lugares[filaDestino, columnaDestino].Duenio.Nombre != Turno.Nombre)
+                        {
+                            Lugares[filaDestino, columnaDestino].Duenio = Turno;
+                            Turno.EnMano.Add(Lugares[filaDestino, columnaDestino]);
+                            Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
+                        }
+                        else {
+                            Mensaje("No puedes comer tus propias fichas");
+                        }
+                    }
+
+
 
                     //actualizo tablero y turno
                     Turno = Turno.Nombre == J1.Nombre ? J2 : J1;
@@ -227,14 +244,41 @@ namespace shogy.Clases
                         EsValido = true;
                     break;
                 case "L^":
-                    if ((filaOrigen < filaDestino) && (columnaOrigen == columnaDestino))
-                        EsValido = true;
-                    break;
-                case "Lv":
                     if ((filaOrigen > filaDestino) && (columnaOrigen == columnaDestino))
                         EsValido = true;
                     break;
-
+                case "Lv":
+                    if ((filaOrigen < filaDestino) && (columnaOrigen == columnaDestino))
+                        EsValido = true;
+                    break;
+                case "E^":  //torre coronada
+                case "Ev":
+                    if (
+                        (
+                        ((columnaOrigen == columnaDestino) && (filaOrigen != filaDestino)) ||
+                        ((filaOrigen == filaDestino) && (columnaOrigen != columnaDestino))
+                        ) || (Math.Abs(filaOrigen - filaDestino) <= 1 && Math.Abs(columnaOrigen - columnaDestino) <= 1)
+                      )
+                        EsValido = true;
+                    break;
+                case "Fv":
+                case "F^": //Alfil coronado
+                    if (  
+                         (
+                            ((filaOrigen > filaDestino) && (columnaOrigen < columnaDestino) ||
+                               (filaOrigen < filaDestino) && (columnaOrigen > columnaDestino)
+                            ) &&
+                              (filaOrigen + columnaOrigen) == (filaDestino + columnaDestino)
+                              &&
+                            (
+                              (filaOrigen != filaDestino) &&
+                              (columnaOrigen != columnaDestino)
+                            ) ||
+                            (Math.Abs(filaOrigen - filaDestino) <= 1 && Math.Abs(columnaOrigen - columnaDestino) <= 1)
+                          )
+                        )
+                        EsValido = true;
+                    break;
 
                 default:
                     return false;
