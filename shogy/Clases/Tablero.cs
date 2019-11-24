@@ -328,6 +328,7 @@ namespace shogy.Clases
                     var columna = columnaOrigen + cont;
                     if (Lugares[fila, columna] != null)
                         EsValido = false;
+                    cont++;
                 }
 
             }
@@ -343,6 +344,16 @@ namespace shogy.Clases
             //hacia las 4:30
             if ((filaOrigen < filaDestino) && (columnaOrigen < columnaDestino))
             {
+                //aumenta fila aumenta columna
+                int cont = 1;
+                for (int fila = filaOrigen + 1; fila < filaDestino; fila++)
+                {
+                    var columna = columnaOrigen + cont;
+                    if (Lugares[fila, columna] != null)
+                        EsValido = false;
+                    cont++;
+                }
+
             }
             //hacia las 6 en punto
             if ((filaOrigen < filaDestino) && (columnaOrigen == columnaDestino))
@@ -355,8 +366,17 @@ namespace shogy.Clases
 
             }
             //hacia las 7:30
-            if ((filaOrigen < filaDestino) && (columnaOrigen < columnaDestino))
+            if ((filaOrigen < filaDestino) && (columnaOrigen > columnaDestino))
             {
+                //fila aumenta columna disminuye
+                int cont = 1;
+                for (int fila = filaOrigen + 1; fila < filaDestino; fila++)
+                {
+                    var columna = columnaOrigen - cont;
+                    if (Lugares[fila, columna] != null)
+                        EsValido = false;
+                    cont++;
+                }
             }
             //hacia las 9 en punto
             if ((filaOrigen == filaDestino) && (columnaOrigen > columnaDestino))
@@ -370,6 +390,15 @@ namespace shogy.Clases
             //jacia las 11:30
             if ((filaOrigen > filaDestino) && (columnaOrigen > columnaDestino))
             {
+                //fila disminuye columna disminuye
+                int cont = 1;
+                for (int fila = filaOrigen - 1; fila > filaDestino; fila--)
+                {
+                    var columna = columnaOrigen - cont;
+                    if (Lugares[fila, columna] != null)
+                        EsValido = false;
+                    cont++;
+                }
             }
 
             return EsValido;
