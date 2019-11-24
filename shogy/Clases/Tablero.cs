@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace shogy.Clases
 {
@@ -76,69 +77,87 @@ namespace shogy.Clases
         public void Mover(string origen, string destino) {
 
             //agregar regex para verificar formato de entrada y verificar existencia
+            string pattern = @"\d{2}";
 
-            char[] desde = origen.ToCharArray();
-            int filaOrigen = int.Parse(desde[0].ToString()); 
-            int columnaOrigen = int.Parse(desde[1].ToString());
-
-            char[] hasta = destino.ToCharArray();
-            int filaDestino = int.Parse(hasta[0].ToString());
-            int columnaDestino = int.Parse(hasta[1].ToString());
-
-            Ficha FichaEnMovimiento = null;
-            try
+            if (!(Regex.IsMatch(origen, pattern) && Regex.IsMatch(destino, pattern)))
             {
-                FichaEnMovimiento = Lugares[filaOrigen, columnaOrigen];
+                Mensaje("Error en coordenadas intentelo denuevo");
             }
-            catch (IndexOutOfRangeException e) {
-                Mensaje("No se puede mover una fica fuera del casilero, intentenlo nuevamente");
-            }
-
-            if (FichaEnMovimiento == null) {
-                Mensaje("No hay ninguna ficha en ese casillero");
-            }
-
-            else if (FichaEnMovimiento.Duenio.Nombre == Turno.Nombre)
+            else
             {
 
-                if (MovimientoEsValido(filaOrigen, columnaOrigen, filaDestino, columnaDestino, FichaEnMovimiento))
+                char[] desde = origen.ToCharArray();
+                int filaOrigen = int.Parse(desde[0].ToString());
+                int columnaOrigen = int.Parse(desde[1].ToString());
+
+                char[] hasta = destino.ToCharArray();
+                int filaDestino = int.Parse(hasta[0].ToString());
+                int columnaDestino = int.Parse(hasta[1].ToString());
+
+                Ficha FichaEnMovimiento = null;
+                try
+                {
+                    FichaEnMovimiento = Lugares[filaOrigen, columnaOrigen];
+                }
+                catch (IndexOutOfRangeException e)
+                {
+                    Mensaje("No se puede mover una fica fuera del casilero, intentenlo nuevamente");
+                }
+
+                if (FichaEnMovimiento == null)
+                {
+                    Mensaje("No hay ninguna ficha en ese casillero");
+                }
+
+                else if (FichaEnMovimiento.Duenio.Nombre == Turno.Nombre)
                 {
 
-                    //vacio el lugar
-                    Lugares[filaOrigen, columnaOrigen] = null;
-                    //reviso si hay una ficha enemiga en el lugar de destino y se com
-                    if (Lugares[filaDestino, columnaDestino] == null)
-                        Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
-                    else {
-                        if (Lugares[filaDestino, columnaDestino].Duenio.Nombre != Turno.Nombre)
+                    if (MovimientoEsValido(filaOrigen, columnaOrigen, filaDestino, columnaDestino, FichaEnMovimiento))
+                    {
+
+                        //reviso si hay una ficha enemiga en el lugar de destino y se come
+                        if (Lugares[filaDestino, columnaDestino] == null)
                         {
-                            Lugares[filaDestino, columnaDestino].Duenio = Turno;
-                            Turno.EnMano.Add(Lugares[filaDestino, columnaDestino]);
+                            //vacio el lugar
+                            Lugares[filaOrigen, columnaOrigen] = null;
+                            //coloco ficha en nueva coordenada
                             Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
+                            //actualizo tablero y turno
+                            Turno = Turno.Nombre == J1.Nombre ? J2 : J1;
                         }
-                        else {
-                            Mensaje("No puedes comer tus propias fichas");
+                        else
+                        {
+                            if (Lugares[filaDestino, columnaDestino].Duenio.Nombre != Turno.Nombre)
+                            {
+                                //vacio el lugar
+                                Lugares[filaOrigen, columnaOrigen] = null;
+                                //ficha pasa al otro jugador
+                                Lugares[filaDestino, columnaDestino].Duenio = Turno;
+                                Turno.EnMano.Add(Lugares[filaDestino, columnaDestino]);
+                                //coloco ficha en nueva coordenada
+                                Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
+                                //actualizo tablero y turno
+                                Turno = Turno.Nombre == J1.Nombre ? J2 : J1;
+                            }
+                            else
+                            {
+                                Mensaje("No puedes comer tus propias fichas");
+                            }
                         }
+
+                        Console.Clear();
+                        Dibujar();
                     }
-
-
-
-                    //actualizo tablero y turno
-                    Turno = Turno.Nombre == J1.Nombre ? J2 : J1;
-
-                    Console.Clear();
-                    Dibujar();
+                    else
+                    {
+                        Mensaje("Movimiento no permitido, intentelo denuevo");
+                    }
                 }
-                else {
-                    Mensaje("Movimiento no permitido, intentelo denuevo");
+                else
+                {
+                    Mensaje("Solo puedes mover tus propias fichas, intentalo denuevo");
                 }
-
-
             }
-            else {
-                Mensaje("Solo puedes mover tus propias fichas, intentalo denuevo");
-            }
-
         }
 
         private void Mensaje(string msg) {
@@ -169,11 +188,11 @@ namespace shogy.Clases
                     break;
                 case "Tv":
                 case "T^":
-                    if( 
+                    if (
                         ((columnaOrigen == columnaDestino) && (filaOrigen != filaDestino)) ||
                         ((filaOrigen == filaDestino) && (columnaOrigen != columnaDestino))
                       )
-                        EsValido = true;
+                       EsValido = true && RecorridoEsValido(filaOrigen,filaDestino,columnaOrigen,columnaDestino); 
                     break;
                 case "Av":
                 case "A^":
@@ -188,7 +207,7 @@ namespace shogy.Clases
                             (columnaOrigen != columnaDestino)
                           )
                         )
-                        EsValido = true;
+                        EsValido = true && RecorridoEsValido(filaOrigen, filaDestino, columnaOrigen, columnaDestino);
                     else if( //diagonales der a izq
                         
                             (  ((filaOrigen < filaDestino) && (columnaOrigen < columnaDestino)) ||
@@ -203,7 +222,7 @@ namespace shogy.Clases
                             )
 
                         )
-                        EsValido = true;
+                        EsValido = true && RecorridoEsValido(filaOrigen, filaDestino, columnaOrigen, columnaDestino);
                     break;
                 case "O^":
                     if (
@@ -245,11 +264,11 @@ namespace shogy.Clases
                     break;
                 case "L^":
                     if ((filaOrigen > filaDestino) && (columnaOrigen == columnaDestino))
-                        EsValido = true;
+                        EsValido = true && RecorridoEsValido(filaOrigen, filaDestino, columnaOrigen, columnaDestino);
                     break;
                 case "Lv":
                     if ((filaOrigen < filaDestino) && (columnaOrigen == columnaDestino))
-                        EsValido = true;
+                        EsValido = true && RecorridoEsValido(filaOrigen, filaDestino, columnaOrigen, columnaDestino);
                     break;
                 case "E^":  //torre coronada
                 case "Ev":
@@ -259,7 +278,7 @@ namespace shogy.Clases
                         ((filaOrigen == filaDestino) && (columnaOrigen != columnaDestino))
                         ) || (Math.Abs(filaOrigen - filaDestino) <= 1 && Math.Abs(columnaOrigen - columnaDestino) <= 1)
                       )
-                        EsValido = true;
+                        EsValido = true && RecorridoEsValido(filaOrigen, filaDestino, columnaOrigen, columnaDestino);
                     break;
                 case "Fv":
                 case "F^": //Alfil coronado
@@ -277,23 +296,84 @@ namespace shogy.Clases
                             (Math.Abs(filaOrigen - filaDestino) <= 1 && Math.Abs(columnaOrigen - columnaDestino) <= 1)
                           )
                         )
-                        EsValido = true;
-                    break;
+                        EsValido = true && RecorridoEsValido(filaOrigen, filaDestino, columnaOrigen, columnaDestino);
+                    break; 
 
                 default:
                     return false;
 
             }
-
             return EsValido;
-
         }
 
-        public static bool IsEven(int value)
+        public bool RecorridoEsValido(int filaOrigen, int filaDestino, int columnaOrigen,  int columnaDestino)
         {
-            return value % 2 != 0;
+            bool EsValido = true;
+            //hacia 12 en punto
+
+            if ((filaOrigen > filaDestino) && (columnaOrigen == columnaDestino)) {
+                for (int i = filaOrigen -1; i > filaDestino; i--)
+                {
+                    if (Lugares[i, columnaOrigen] != null)
+                        EsValido = false;
+                }
+
+            }
+            //hacia 1:30
+            if ((filaOrigen > filaDestino) && (columnaOrigen < columnaDestino)) {
+                //fila disminuye columna aumenta
+                int cont = 1;
+                for (int fila = filaOrigen -1; fila > filaDestino; fila--)
+                {
+                    var columna = columnaOrigen + cont;
+                    if (Lugares[fila, columna] != null)
+                        EsValido = false;
+                }
+
+            }
+            //hacia las 3 en punto
+            if ((filaOrigen == filaDestino) && (columnaOrigen < columnaDestino))
+            {
+                for (int i = columnaOrigen +1; i < columnaDestino; i++)
+                {
+                    if (Lugares[filaOrigen, i] != null)
+                        EsValido = false;
+                }
+            }
+            //hacia las 4:30
+            if ((filaOrigen < filaDestino) && (columnaOrigen < columnaDestino))
+            {
+            }
+            //hacia las 6 en punto
+            if ((filaOrigen < filaDestino) && (columnaOrigen == columnaDestino))
+            {
+                for (int i = filaOrigen +1; i < filaDestino; i++)
+                {
+                    if (Lugares[i, columnaOrigen] != null)
+                        EsValido = false;
+                }
+
+            }
+            //hacia las 7:30
+            if ((filaOrigen < filaDestino) && (columnaOrigen < columnaDestino))
+            {
+            }
+            //hacia las 9 en punto
+            if ((filaOrigen == filaDestino) && (columnaOrigen > columnaDestino))
+            {
+                for (int i = columnaOrigen-1; i > columnaDestino; i--)
+                {
+                    if (Lugares[filaOrigen, i] != null)
+                        EsValido = false;
+                }
+            }
+            //jacia las 11:30
+            if ((filaOrigen > filaDestino) && (columnaOrigen > columnaDestino))
+            {
+            }
+
+            return EsValido;
         }
 
     }
-
 }
