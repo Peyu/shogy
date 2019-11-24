@@ -6,14 +6,13 @@ namespace shogy.Clases
 {
     class Ficha
     {
-       
         public string Dibujo { get; set; } // Cv  C^
+        public string DibujoOriginal { get; set; }
         public Jugador Duenio { get; set; }
         public Ficha( string dibujo, Jugador duenio ) {
             Dibujo = dibujo;
+            DibujoOriginal = dibujo;
             Duenio = duenio;
         }
-
-
     }
 }

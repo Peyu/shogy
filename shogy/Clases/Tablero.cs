@@ -122,6 +122,7 @@ namespace shogy.Clases
                             Lugares[filaOrigen, columnaOrigen] = null;
                             //coloco ficha en nueva coordenada
                             Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
+                            ChequearCoronacion(filaOrigen, filaDestino, FichaEnMovimiento);
                             //actualizo tablero y turno
                             Turno = Turno.Nombre == J1.Nombre ? J2 : J1;
                         }
@@ -136,6 +137,7 @@ namespace shogy.Clases
                                 Turno.EnMano.Add(Lugares[filaDestino, columnaDestino]);
                                 //coloco ficha en nueva coordenada
                                 Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
+                                ChequearCoronacion(filaOrigen, filaDestino, FichaEnMovimiento);
                                 //actualizo tablero y turno
                                 Turno = Turno.Nombre == J1.Nombre ? J2 : J1;
                             }
@@ -156,6 +158,83 @@ namespace shogy.Clases
                 else
                 {
                     Mensaje("Solo puedes mover tus propias fichas, intentalo denuevo");
+                }
+
+                
+
+            }
+        }
+
+        private void ChequearCoronacion(int filaOrigen,int filaDestino, Ficha ficha) {
+            if (
+                !(ficha.Dibujo.Contains("R") || 
+                ficha.Dibujo.Contains("O") || 
+                ficha.Dibujo.Contains("E") || 
+                ficha.Dibujo.Contains("F"))
+                )  //Rey Y Oros no se coronan, tampoco los ya coronados.
+            {
+
+                string coronar = "";
+                if (Turno == J1 && (filaDestino < 3 || filaOrigen < 3))
+                {
+                    if (filaDestino != 0)
+                    {
+                        while (coronar != "S" && coronar != "N" && coronar != "s" && coronar != "n")
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Desea coronar la ficha " + ficha.Dibujo + "? (S/N)");
+                            coronar = Console.ReadLine();
+                            if (coronar != "S" && coronar != "N" && coronar != "s" && coronar != "n")
+                            {
+                                Console.WriteLine("Por favor responda con S o N, presione una tecla para continuar...");
+                            }
+                        }
+                    }
+                    else {
+                        coronar = "S";
+                    }
+                }
+
+                if (Turno == J2 && (filaDestino > 5 || filaOrigen > 5))
+                {
+                    if (filaDestino != 8)
+                    {
+                        while (coronar != "S" && coronar != "N" && coronar != "s" && coronar != "n")
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Desea coronar la ficha " + ficha.Dibujo + "? (S/N)");
+                            coronar = Console.ReadLine();
+                            if (coronar != "S" && coronar != "N" && coronar != "s" && coronar != "n")
+                            {
+                                Console.WriteLine("Por favor responda con S o N, presione una tecla para continuar...");
+                            }
+                        }
+                    }
+                    else {
+                        coronar = "S";
+                    }
+                }
+
+                if (coronar == "s" || coronar == "S")
+                {
+                    if (ficha.Dibujo.Contains("^"))
+                    {
+                        if (ficha.Dibujo.Contains("T"))
+                            ficha.Dibujo = "E^";
+                        else if (ficha.Dibujo.Contains("A"))
+                            ficha.Dibujo = "F^";
+                        else
+                            ficha.Dibujo = "O^";
+                    }
+                    else {
+                        if (ficha.Dibujo.Contains("T"))
+                            ficha.Dibujo = "Ev";
+                        else if (ficha.Dibujo.Contains("A"))
+                            ficha.Dibujo = "Fv";
+                        else
+                            ficha.Dibujo = "Ov";
+                    }
+
                 }
             }
         }
