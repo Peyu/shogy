@@ -24,14 +24,20 @@ namespace shogy
                 tab.Dibujar();
 
                 Console.WriteLine("Turno de " + tab.Turno.Nombre);
-                Console.WriteLine("Casillero Origen");
+                Console.WriteLine("Escriba coordenada de origen o 'C' para (C)olocar ficha en Mano ");
                 string origen = Console.ReadLine();
 
-                Console.WriteLine("Casillero Destino");
-                string destino = Console.ReadLine();
+                if (origen == "C" || origen == "c")
+                {
+                    tab.ColocarFichaEnMano();
+                }
+                else
+                {
+                    Console.WriteLine("Escriba coordinada destino");
+                    string destino = Console.ReadLine();
+                    tab.Mover(origen, destino);
+                }
 
-                tab.Mover(origen, destino);
-                
             }
         }
     }

@@ -11,7 +11,7 @@ namespace shogy.Clases
         public Jugador Duenio { get; set; }
         public Ficha( string dibujo, Jugador duenio ) {
             Dibujo = dibujo;
-            DibujoOriginal = dibujo;
+            DibujoOriginal = dibujo.Remove(dibujo.Length - 1);
             Duenio = duenio;
         }
     }
