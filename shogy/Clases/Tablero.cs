@@ -167,25 +167,28 @@ namespace shogy.Clases
             bool fichaColocada = false;
             Console.Clear();
             Console.WriteLine("Estas son las fichas que posees:");
-
+            Console.WriteLine("");
             foreach (var ficha in Turno.EnMano)
             {
                 Console.WriteLine(ficha.DibujoOriginal);
             }
+            Console.WriteLine("");
             Console.WriteLine("Cual ficha deseas colocar en el Tablero? (Oprima 'N' si no desea colocar ninguna)");
             var fichaAColocar = Console.ReadLine();
             if (fichaAColocar != "n" && fichaAColocar != "N")
             {
                 var EnMano = Turno.EnMano.Find(x => x.Dibujo == fichaAColocar);
                 if (EnMano == null)
+                {
+                    Mensaje("Error al selecionar ficha, intentalo denuevo");
                     ColocarFichaEnMano();
+                }
                 else
                 {
-                    
+                    Dibujar();
                     Console.WriteLine("Escriba coordinada destino");
                     string destino = Console.ReadLine();
                     string pattern = @"\d{2}";
-
                     if (!(Regex.IsMatch(destino, pattern)))
                     {
                         Mensaje("Error en coordenadas intentelo denuevo");
@@ -196,38 +199,46 @@ namespace shogy.Clases
                         int filaDestino = int.Parse(hasta[0].ToString());
                         int columnaDestino = int.Parse(hasta[1].ToString());
 
-                        //agrego orientacion a la ficha
-                        if (Turno == J1)
-                            EnMano.Dibujo += "^";
-                        else
-                            EnMano.Dibujo += "v";
-
                         bool posicionEsValida = false;
                         //si es peon reviso que no haya otro en la misma linea vertical y que no se coloque en ultima linea
                         if (EnMano.Dibujo.Contains("p") && ((Turno == J1 && filaDestino != 8) || (Turno == J2 && filaDestino != 0)))
                         {
+                            bool YaExisteUnPeon = false;
                             for (int i = 0; i < 9; i++)
                             {
-                                if (Lugares[filaDestino, i].Dibujo.Contains("p") &&
-                                    Lugares[filaDestino, i].Duenio == Turno
-                                    )
+                                if (Lugares[i,columnaDestino] != null)
                                 {
-                                    Mensaje("Ya existe un peon sobre la misma linea vertical, intentalo nuevamente");
+                                    if (Lugares[i, columnaDestino].Dibujo.Contains("p") &&
+                                        Lugares[i, columnaDestino].Duenio == Turno
+                                        )
+                                    {
+                                        YaExisteUnPeon = true;
+                                    }
+                                    
                                 }
-                                else
-                                    posicionEsValida = true;
                             }
+                            if (YaExisteUnPeon)
+                            {
+                                Mensaje("Ya existe un peon sobre la misma linea vertical, intentalo nuevamente");
+                            }
+                            else posicionEsValida = true;
                         }
                         //reviso que lanceros no sean colocados sobre ultima linea
-                        else if (EnMano.Dibujo.Contains("L") && ((Turno == J1 && filaDestino != 8) || (Turno == J2 && filaDestino != 0)))
+                        else if (EnMano.Dibujo.Contains("L") )
                         {
-                            posicionEsValida = true;
+                            if ((Turno == J1 && filaDestino != 8) || (Turno == J2 && filaDestino != 0))
+                                posicionEsValida = true;
+                            else Mensaje("No puedes colocar un Lancero sobre la última fila");
                         }
                         //reviso que caballos no sean colocados sobre las ultimas dos lineas
-                        else if (EnMano.Dibujo.Contains("C") && ((Turno == J1 && filaDestino > 1) || (Turno == J2 && filaDestino < 7)))
+                        else if (EnMano.Dibujo.Contains("C") )
                         {
-                            posicionEsValida = true;
-                        }else
+                            if ((Turno == J1 && filaDestino > 1) || (Turno == J2 && filaDestino < 7))
+                                posicionEsValida = true;
+                            else
+                                Mensaje("No puedes colocar un Caballo sobre las dos últimas filas");
+                        }
+                        else
                             posicionEsValida = true;
 
                         if (posicionEsValida)
@@ -235,6 +246,12 @@ namespace shogy.Clases
                             //reviso que no se ponga una ficha sobre otra    
                             if ((Lugares[filaDestino, columnaDestino] == null))
                             {
+
+                                //agrego orientacion a la ficha
+                                if (Turno == J1)
+                                    EnMano.Dibujo += "^";
+                                else
+                                    EnMano.Dibujo += "v";
                                 Lugares[filaDestino, columnaDestino] = EnMano;
                             }
                             else
@@ -242,16 +259,13 @@ namespace shogy.Clases
                                 Mensaje("Ya hay una ficha en esa coordenada, intentalo nuevamente");
                             }
                         }
-                        else {
+                        else
+                        {
                             Mensaje("Coordenada de destino no permitida");
                         }
-
                     }
-
-
-                    }
+                }
             }
-
             return fichaColocada;
         }
 
@@ -263,7 +277,6 @@ namespace shogy.Clases
                 ficha.Dibujo.Contains("F"))
                 )  //Rey Y Oros no se coronan, tampoco los ya coronados.
             {
-
                 string coronar = "";
                 if (Turno == J1 && (filaDestino < 3 || filaOrigen < 3))
                 {
