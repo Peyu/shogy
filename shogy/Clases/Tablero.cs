@@ -74,6 +74,10 @@ namespace shogy.Clases
             }
         }
 
+        private void CambiarTurno() {
+            Turno = Turno.Nombre == J1.Nombre ? J2 : J1; 
+        }
+
         public void Mover(string origen, string destino) {
 
             //agregar regex para verificar formato de entrada y verificar existencia
@@ -124,7 +128,7 @@ namespace shogy.Clases
                             Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
                             ChequearCoronacion(filaOrigen, filaDestino, FichaEnMovimiento);
                             //actualizo tablero y turno
-                            Turno = Turno.Nombre == J1.Nombre ? J2 : J1;
+                            CambiarTurno();
                         }
                         else
                         {
@@ -140,7 +144,7 @@ namespace shogy.Clases
                                 Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
                                 ChequearCoronacion(filaOrigen, filaDestino, FichaEnMovimiento);
                                 //actualizo tablero y turno
-                                Turno = Turno.Nombre == J1.Nombre ? J2 : J1;
+                                CambiarTurno();
                             }
                             else
                             {
@@ -163,8 +167,10 @@ namespace shogy.Clases
             }
         }
 
-        public bool ColocarFichaEnMano() {
+        public void ColocarFichaEnMano() {
             bool fichaColocada = false;
+            string msg = "";
+            bool posicionEsValida = true;
             Console.Clear();
             Console.WriteLine("Estas son las fichas que posees:");
             Console.WriteLine("");
@@ -191,7 +197,7 @@ namespace shogy.Clases
                     string pattern = @"\d{2}";
                     if (!(Regex.IsMatch(destino, pattern)))
                     {
-                        Mensaje("Error en coordenadas intentelo denuevo");
+                        msg = "Error en coordenadas intentelo denuevo";
                     }
                     else
                     {
@@ -199,10 +205,10 @@ namespace shogy.Clases
                         int filaDestino = int.Parse(hasta[0].ToString());
                         int columnaDestino = int.Parse(hasta[1].ToString());
 
-                        bool posicionEsValida = false;
-                        //si es peon reviso que no haya otro en la misma linea vertical y que no se coloque en ultima linea
-                        if (EnMano.Dibujo.Contains("p") && ((Turno == J1 && filaDestino != 8) || (Turno == J2 && filaDestino != 0)))
+                        //si es peon reviso 
+                        if (EnMano.Dibujo.Contains("p"))
                         {
+                            //reviso que no haya otro peon sbre misma linea
                             bool YaExisteUnPeon = false;
                             for (int i = 0; i < 9; i++)
                             {
@@ -219,33 +225,46 @@ namespace shogy.Clases
                             }
                             if (YaExisteUnPeon)
                             {
-                                Mensaje("Ya existe un peon sobre la misma linea vertical, intentalo nuevamente");
+                                posicionEsValida = false;
+                                msg ="Ya existe un peon sobre la misma linea vertical, intentalo nuevamente";
                             }
-                            else posicionEsValida = true;
+                            
+                            //reviso que no este sobre la ultima linea
+                            if ((Turno == J1 && filaDestino == 0) || (Turno == J2 && filaDestino == 8))
+                            {
+                                msg = "No puedes colocar un peon sobre la ultima fila";
+                                posicionEsValida = false;
+                            }
                         }
                         //reviso que lanceros no sean colocados sobre ultima linea
                         else if (EnMano.Dibujo.Contains("L") )
                         {
-                            if ((Turno == J1 && filaDestino != 8) || (Turno == J2 && filaDestino != 0))
-                                posicionEsValida = true;
-                            else Mensaje("No puedes colocar un Lancero sobre la última fila");
+                            if (!((Turno == J1 && filaDestino != 0) || (Turno == J2 && filaDestino != 8))){
+                                posicionEsValida = false;
+                                msg ="No puedes colocar un Lancero sobre la última fila";
+                            }
                         }
                         //reviso que caballos no sean colocados sobre las ultimas dos lineas
                         else if (EnMano.Dibujo.Contains("C") )
                         {
-                            if ((Turno == J1 && filaDestino > 1) || (Turno == J2 && filaDestino < 7))
-                                posicionEsValida = true;
-                            else
-                                Mensaje("No puedes colocar un Caballo sobre las dos últimas filas");
+                            if (!((Turno == J1 && filaDestino > 1) || (Turno == J2 && filaDestino < 7))) {
+                                posicionEsValida = false;
+                                msg ="No puedes colocar un Caballo sobre las dos últimas filas";
+                            }
                         }
-                        else
-                            posicionEsValida = true;
-
+                        
                         if (posicionEsValida)
                         {
                             //reviso que no se ponga una ficha sobre otra    
-                            if ((Lugares[filaDestino, columnaDestino] == null))
+                            if (!(Lugares[filaDestino, columnaDestino] == null))
                             {
+                                posicionEsValida = false;
+                                msg = "Ya hay una ficha en esa coordenada, intentalo nuevamente";
+                            }
+                            else
+                            {
+                                //remuevo ficha de la lista en mano
+                                Turno.EnMano.Remove(EnMano);
 
                                 //agrego orientacion a la ficha
                                 if (Turno == J1)
@@ -253,20 +272,19 @@ namespace shogy.Clases
                                 else
                                     EnMano.Dibujo += "v";
                                 Lugares[filaDestino, columnaDestino] = EnMano;
-                            }
-                            else
-                            {
-                                Mensaje("Ya hay una ficha en esa coordenada, intentalo nuevamente");
+
                             }
                         }
-                        else
-                        {
-                            Mensaje("Coordenada de destino no permitida");
-                        }
+                        
                     }
+                    if (posicionEsValida) {
+                        CambiarTurno();
+                    }
+                    else
+                        Mensaje(msg);
                 }
             }
-            return fichaColocada;
+            
         }
 
         private void ChequearCoronacion(int filaOrigen,int filaDestino, Ficha ficha) {
