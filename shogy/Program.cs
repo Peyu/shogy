@@ -18,7 +18,7 @@ namespace shogy
 
             var tab = new Tablero(j1,j2);
             
-            while (true)
+            while (tab.EnJuego)
             {
                 Console.WriteLine(" ");
                 tab.Dibujar();

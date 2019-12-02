@@ -13,7 +13,8 @@ namespace shogy.Clases
         public Jugador J2;
         public Jugador Turno;
         private bool CambiarTurnoFlag = false;
-        
+        public bool EnJuego = true;
+        private Ficha atacante;
 
         public Tablero(Jugador j1, Jugador j2) {
             J1 = j1;
@@ -80,10 +81,90 @@ namespace shogy.Clases
                 Console.WriteLine(filas + "  " + linea);
                 Console.WriteLine(" ");
             }
-            ChequearJaque();
+            if(ChequearJaque())
+                ChequearJaqueMate();
+
             if (CambiarTurnoFlag) {
                 CambiarTurno();
                 CambiarTurnoFlag = false;
+            }
+
+        }
+
+        private void ChequearJaqueMate() {
+            //primero busco el rey
+            string PosicionReyContrincante = "";
+            int filaRey = -1;
+            int columnaRey = -1;
+
+            for (int fila = 0; fila < 9; fila++)
+            {
+                for (int columna = 0; columna < 9; columna++)
+                {
+                    if (Lugares[fila, columna] != null)
+                    {
+                        if (Lugares[fila, columna].Dibujo.Contains("R") && Lugares[fila, columna].Duenio.Nombre != Turno.Nombre)
+                        {
+                            PosicionReyContrincante = Lugares[fila, columna].PosicionActual;
+                            filaRey = fila;
+                            columnaRey = columna;
+                        }
+                    }
+                }
+            }
+            //busco posibles jugadas del rey
+            List<string> posiblesJugadas = new List<string>();
+            for (int f = filaRey -1; f <= filaRey +1; f++)
+            {
+                for (int c = columnaRey -1 ; c <= columnaRey +1; c++)
+                {
+                    if (f >= 0 && f < 9 && c >= 0 && c < 9) {
+                        string posibleJugada = "" + f + c;
+                        posiblesJugadas.Add(posibleJugada);
+                    }
+
+                }
+            }
+
+            //borro las jugadas que se encuentren en jaque
+            for (int fila = 0; fila < 9; fila++)
+            {
+                for (int columna = 0; columna < 9; columna++)
+                {
+                    if(Lugares[fila, columna] != null) { 
+                        foreach (var posicion in Lugares[fila, columna].PosiblesAtaques)
+                        {
+                            if (posiblesJugadas.Contains(posicion)) {
+                                posiblesJugadas.Remove(posicion);
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            //Si el atacante puede ser comido no es jaque mate
+            bool atacable = false;
+            for (int fila = 0; fila < 9; fila++)
+            {
+                for (int columna = 0; columna < 9; columna++)
+                {
+                    if (Lugares[fila, columna] != null && Lugares[fila, columna].Duenio != Turno) {
+                        foreach (var posicionAtacable in Lugares[fila, columna].PosiblesAtaques)
+                        {
+                            if (atacante.PosicionActual == posicionAtacable) {
+                                atacable = true;
+                            }
+                        }
+
+                    }
+
+                }
+            }
+
+            if (posiblesJugadas.Count == 0 && !atacable) {
+                EnJuego = false;
+                Mensaje("Jaque Mate!! " + Turno.Nombre + " ha ganado el Juego");
             }
 
         }
@@ -93,7 +174,7 @@ namespace shogy.Clases
             Turno = Turno.Nombre == J1.Nombre ? J2 : J1; 
         }
 
-        private void ChequearJaque() {
+        private bool ChequearJaque() {
             //si el rey ajeno queda en jaque se tiene que anunciar
 
             //primero busco el rey
@@ -124,6 +205,7 @@ namespace shogy.Clases
                             if (Lugares[fila, columna].PosiblesAtaques.Contains(PosicionReyContrincante))
                             {
                                 jaque = true;
+                                atacante = Lugares[fila, columna];
                             }
 
                         }
@@ -134,6 +216,7 @@ namespace shogy.Clases
                 Mensaje(Turno.Nombre + " ha cantado jaque al Rey");
             }
 
+            return jaque;
         }
 
 
@@ -222,16 +305,27 @@ namespace shogy.Clases
                             {
                                 if (Lugares[filaDestino, columnaDestino].Duenio.Nombre != Turno.Nombre)
                                 {
-                                    //vacio el lugar
-                                    Lugares[filaOrigen, columnaOrigen] = null;
-                                    //ficha pasa al otro jugador
-                                    Lugares[filaDestino, columnaDestino].Duenio = Turno;
-                                    Lugares[filaDestino, columnaDestino].Dibujo = Lugares[filaDestino, columnaDestino].DibujoOriginal;
-                                    Turno.EnMano.Add(Lugares[filaDestino, columnaDestino]);
-                                    //coloco ficha en nueva coordenada
-                                    Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
-                                    ChequearCoronacion(filaOrigen, filaDestino, FichaEnMovimiento);
-                                    
+                                    //igual esto no deberia pasar :) solo por las dudas... 
+                                    if (Lugares[filaDestino, columnaDestino].Dibujo.Contains("R"))
+                                    {
+                                        EnJuego = false;
+                                        msg = "El Rey ha muerto, que viva el Rey!!";
+                                        Mensaje(Turno.Nombre + " ha comido al rey adversario. " + Turno.Nombre + " es el ganador");
+                                    }
+                                    else
+                                    {
+                                        //vacio el lugar
+                                        Lugares[filaOrigen, columnaOrigen] = null;
+                                        //ficha pasa al otro jugador
+                                        Lugares[filaDestino, columnaDestino].Duenio = Turno;
+                                        Lugares[filaDestino, columnaDestino].Dibujo = Lugares[filaDestino, columnaDestino].DibujoOriginal;
+                                        Turno.EnMano.Add(Lugares[filaDestino, columnaDestino]);
+                                        //coloco ficha en nueva coordenada
+                                        Lugares[filaDestino, columnaDestino] = FichaEnMovimiento;
+                                        ChequearCoronacion(filaOrigen, filaDestino, FichaEnMovimiento);
+                                        //Actualizo posicion
+                                        FichaEnMovimiento.PosicionActual = "" + filaDestino + columnaDestino;
+                                    }
                                 }
                                 else
                                 {
@@ -247,7 +341,8 @@ namespace shogy.Clases
                     }
                     else
                     {
-                        msg = "Solo puedes mover tus propias fichas, intentalo denuevo";
+                        if (msg == "")  
+                            msg = "Solo puedes mover tus propias fichas, intentalo denuevo";
                     }
 
 
@@ -634,13 +729,14 @@ namespace shogy.Clases
             {
                 if (i >= 0 && i < 9)
                 {
-                    if (Lugares[i, ficha.getColumna()] == null)
+                    string enAtaque = ("" + i + ficha.getColumna());
+                    ficha.PosiblesAtaques.Add(enAtaque);
+
+                    if (Lugares[i, ficha.getColumna()] != null)
                     {
-                        string enAtaque = ("" + i + ficha.getColumna());
-                        ficha.PosiblesAtaques.Add(enAtaque);
-                    }
-                    else
                         break;
+                    }
+
                 }
             }
         }
@@ -668,13 +764,14 @@ namespace shogy.Clases
             {
                 if (i >= 0 && i < 9)
                 {
-                    if (Lugares[ficha.getFila(), i] == null)
+                    string enAtaque = ("" + ficha.getFila() + i);
+                    ficha.PosiblesAtaques.Add(enAtaque);
+                    if (Lugares[ficha.getFila(), i] != null)
                     {
-                        string enAtaque = ("" + ficha.getFila() + i);
-                        ficha.PosiblesAtaques.Add(enAtaque);
-                    }
-                    else
                         break;
+                    }
+                    
+                        
                 }
             }
         }
@@ -683,13 +780,13 @@ namespace shogy.Clases
             {
                 if (i >= 0 && i < 9)
                 {
-                    if (Lugares[ficha.getFila(), i] == null)
+                    string enAtaque = ("" + ficha.getFila() + i);
+                    ficha.PosiblesAtaques.Add(enAtaque);
+                    if (Lugares[ficha.getFila(), i] != null)
                     {
-                        string enAtaque = ("" + ficha.getFila() + i);
-                        ficha.PosiblesAtaques.Add(enAtaque);
-                    }
-                    else
                         break;
+                    }
+                    
                 }
             }
         }
@@ -703,13 +800,13 @@ namespace shogy.Clases
                 contador++;
                 if (fila >= 0 && fila <= 8 && columna >= 0 && columna <= 8)
                 {
-                    if (Lugares[fila, columna] == null)
+                    string enAtaque = ("" + fila + columna);
+                    ficha.PosiblesAtaques.Add(enAtaque);
+                    if (Lugares[fila, columna] != null)
                     {
-                        string enAtaque = ("" + fila + columna);
-                        ficha.PosiblesAtaques.Add(enAtaque);
-                    }
-                    else
                         break;
+                    }
+                    
                 }
                 
             }
@@ -723,13 +820,13 @@ namespace shogy.Clases
                 contador++;
                 if (fila >= 0 && fila <= 8 && columna >= 0 && columna <= 8)
                 {
-                    if (Lugares[fila, columna] == null)
+                    string enAtaque = ("" + fila + columna);
+                    ficha.PosiblesAtaques.Add(enAtaque);
+                    if (Lugares[fila, columna] != null)
                     {
-                        string enAtaque = ("" + fila + columna);
-                        ficha.PosiblesAtaques.Add(enAtaque);
-                    }
-                    else
                         break;
+                    }
+                    
                 }
                
             }
@@ -743,13 +840,13 @@ namespace shogy.Clases
                 contador++;
                 if (fila >= 0 && fila <= 8 && columna >= 0 && columna <= 8)
                 {
-                    if (Lugares[fila, columna] == null)
+                    string enAtaque = ("" + fila + columna);
+                    ficha.PosiblesAtaques.Add(enAtaque);
+                    if (Lugares[fila, columna] != null)
                     {
-                        string enAtaque = ("" + fila + columna);
-                        ficha.PosiblesAtaques.Add(enAtaque);
-                    }
-                    else
                         break;
+                    
+                    }
                 }
             }
         }
@@ -762,13 +859,13 @@ namespace shogy.Clases
                 contador++;
                 if (fila >= 0 && fila <= 8 && columna >= 0 && columna <= 8)
                 {
-                    if (Lugares[fila, columna] == null)
+                    string enAtaque = ("" + fila + columna);
+                    ficha.PosiblesAtaques.Add(enAtaque);
+                    if (Lugares[fila, columna] != null)
                     {
-                        string enAtaque = ("" + fila + columna);
-                        ficha.PosiblesAtaques.Add(enAtaque);
-                    }
-                    else
                         break;
+                    }
+                    
                 }
                 
             }
@@ -794,7 +891,7 @@ namespace shogy.Clases
                             coronar = Console.ReadLine();
                             if (coronar != "S" && coronar != "N" && coronar != "s" && coronar != "n")
                             {
-                                Console.WriteLine("Por favor responda con S o N, presione una tecla para continuar...");
+                                Console.WriteLine("Por favor responda con S o N, presione Enter para continuar...");
                             }
                         }
                     }
@@ -833,6 +930,7 @@ namespace shogy.Clases
                             ficha.Dibujo = "F^";
                         else
                             ficha.Dibujo = "O^";
+                        ActualizarAtaquesPosibles(ficha);
                     }
                     else {
                         if (ficha.Dibujo.Contains("T"))
@@ -841,10 +939,12 @@ namespace shogy.Clases
                             ficha.Dibujo = "Fv";
                         else
                             ficha.Dibujo = "Ov";
+                        ActualizarAtaquesPosibles(ficha);
                     }
 
                 }
             }
+            
         }
 
         private void Mensaje(string msg) {
@@ -969,19 +1069,31 @@ namespace shogy.Clases
                     break;
                 case "Fv":
                 case "F^": //Alfil coronado
-                    if (  
-                         (
-                            ((filaOrigen > filaDestino) && (columnaOrigen < columnaDestino) ||
-                               (filaOrigen < filaDestino) && (columnaOrigen > columnaDestino)
+                    if (  //diagonales izq a der
+                          (((filaOrigen > filaDestino) && (columnaOrigen < columnaDestino) ||
+                             (filaOrigen < filaDestino) && (columnaOrigen > columnaDestino)
+                          ) &&
+                            (filaOrigen + columnaOrigen) == (filaDestino + columnaDestino)
+                            &&
+                          (
+                            (filaOrigen != filaDestino) &&
+                            (columnaOrigen != columnaDestino)
+                          )) || (Math.Abs(filaOrigen - filaDestino) <= 1 && Math.Abs(columnaOrigen - columnaDestino) <= 1)
+                        )
+                        EsValido = true && RecorridoEsValido(filaOrigen, filaDestino, columnaOrigen, columnaDestino);
+                    else if ( //diagonales der a izq
+
+                            ((((filaOrigen < filaDestino) && (columnaOrigen < columnaDestino)) ||
+                               ((filaOrigen > filaDestino) && (columnaOrigen > columnaDestino)
                             ) &&
-                              (filaOrigen + columnaOrigen) == (filaDestino + columnaDestino)
-                              &&
+                                (Math.Abs(filaOrigen - columnaOrigen)) ==
+                                (Math.Abs(filaDestino - columnaDestino))
+                            ) &&
                             (
-                              (filaOrigen != filaDestino) &&
-                              (columnaOrigen != columnaDestino)
-                            ) ||
-                            (Math.Abs(filaOrigen - filaDestino) <= 1 && Math.Abs(columnaOrigen - columnaDestino) <= 1)
-                          )
+                                (filaOrigen != filaDestino) &&
+                                (columnaOrigen != columnaDestino)
+                            )) || (Math.Abs(filaOrigen - filaDestino) <= 1 && Math.Abs(columnaOrigen - columnaDestino) <= 1)
+
                         )
                         EsValido = true && RecorridoEsValido(filaOrigen, filaDestino, columnaOrigen, columnaDestino);
                     break; 
