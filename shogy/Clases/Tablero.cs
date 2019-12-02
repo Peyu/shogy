@@ -250,11 +250,6 @@ namespace shogy.Clases
                     msg ="No hay ninguna ficha en el casillero de origen, intentalo denuevo";
                 }
 
-                //if (FichaEnMovimiento == null)
-                //{
-                //    msg = "No hay ninguna ficha en ese casillero";
-                //}
-
                 //reviso que el rey propio no quede en jaque
                 bool enJaque = false;
                 //si estoy moviendo el rey chequeo su nueva posicion
@@ -305,7 +300,7 @@ namespace shogy.Clases
                             {
                                 if (Lugares[filaDestino, columnaDestino].Duenio.Nombre != Turno.Nombre)
                                 {
-                                    //igual esto no deberia pasar :) solo por las dudas... 
+                                     
                                     if (Lugares[filaDestino, columnaDestino].Dibujo.Contains("R"))
                                     {
                                         EnJuego = false;
@@ -345,36 +340,6 @@ namespace shogy.Clases
                             msg = "Solo puedes mover tus propias fichas, intentalo denuevo";
                     }
 
-
-                    //logica para verificar que no se quede en jaque despues del movimiento... Se podria no poner...
-                    //else { //si no estoy moviendo el rey, igual chequeo que no quede en jaque
-                    //
-                    //    //primero busco el rey
-                    //    string posicionAChequear = "";
-                    //    for (int fila = 0; fila < 9; fila++)
-                    //    {
-                    //        for (int columna = 0; columna < 9; columna++)
-                    //        {
-                    //            if (Lugares[fila, columna].Dibujo.Contains("R") && Lugares[fila, columna].Duenio.Nombre == Turno.Nombre) {
-                    //                posicionAChequear = Lugares[fila, columna].PosicionActual;
-                    //            }
-                    //        }
-                    //    }
-                    //    //ahora se chequea 
-                    //    for (int fila = 0; fila < 9; fila++)
-                    //    {
-                    //        for (int columna = 0; columna < 9; columna++)
-                    //        {
-                    //            if (Lugares[fila, columna].PosiblesAtaques.Contains(posicionAChequear)) {
-                    //                msg = "No puedes hacer un movimiento que termine en tu propio jaque";
-                    //                enJaque = true;
-                    //            }
-                    //        }
-                    //    }
-                    //}            
-
-
-                    //ChequearJaque();
                 }
                 else
                     msg = "Error en coordenadas, intentalo nuevamente";
